@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Biblioteca - Listado de Libros</title>
+  <!-- Enlaza el CSS específico para la página de listado -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='style_index.css') }}">
+  <!-- Puedes incluir otros estilos si lo requieres -->
+</head>
+<body>
+  <h1>Biblioteca de Libros</h1>
+
+  <!-- Formulario de búsqueda -->
+  <form method="GET" action="{{ url_for('index') }}">
+    <input type="text" name="q" placeholder="Buscar por título, autor o género" value="{{ search_query }}">
+    <button type="submit">Buscar</button>
+  </form>
+
+  <!-- Enlace a la página para agregar libro -->
+  <p><a href="{{ url_for('add_book') }}">Agregar Nuevo Libro</a></p>
+
+  <!-- Formulario que envuelve la tabla y los botones de acción -->
+  <form id="booksForm" method="POST">
+    <table>
+      <thead>
+        <tr>
+          <th>Seleccionar</th>
+          <th>ID</th>
+          <th>Título</th>
+          <th>Autor</th>
+          <th>Género</th>
+          <th>Año</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for book in books %}
+        <tr>
+          <td>
+            <input type="checkbox" name="selected_books" value="{{ book.id }}">
+          </td>
+          <td>{{ book.id }}</td>
+          <td>{{ book.title }}</td>
+          <td>{{ book.author }}</td>
+          <td>{{ book.genre }}</td>
+          <td>{{ book.year }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
+    <!-- Botones de acción fuera de la tabla -->
+    <div class="action-buttons">
+      <!-- Botón de editar: usaremos JavaScript para redirigir si se selecciona solo uno -->
+      <button type="button" onclick="editSelected()">Editar</button>
+
+      <!-- Botón de eliminar: se enviará el formulario a una ruta específica para eliminar varios registros -->
+      <button type="submit" formaction="{{ url_for('delete_multiple') }}" onclick="return confirm('¿Seguro que deseas eliminar los registros seleccionados?');">Eliminar</button>
+    </div>
+  </form>
+
+  <script>
+    // Función para editar un registro: se debe seleccionar exactamente uno
+    function editSelected() {
+      // Obtener todos los checkboxes seleccionados
+      const selected = document.querySelectorAll('input[name="selected_books"]:checked');
+      if (selected.length === 0) {
+        alert("Debes seleccionar un registro para editar.");
+      } else if (selected.length > 1) {
+        alert("Solo puedes editar un registro a la vez. Selecciona solo uno.");
+      } else {
+        // Si hay exactamente un checkbox seleccionado, redirige a la página de edición
+        const bookId = selected[0].value;
+        window.location.href = "{{ url_for('edit_book', book_id=0) }}".replace("0", bookId);
+      }
+    }
+  </script>
+</body>
+</html>
